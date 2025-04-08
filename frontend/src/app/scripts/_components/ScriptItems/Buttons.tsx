@@ -10,17 +10,17 @@ import { Script } from "@/lib/types";
 import { BookOpenText, Code, Globe, LinkIcon, RefreshCcw } from "lucide-react";
 
 const generateInstallSourceUrl = (slug: string) => {
-  const baseUrl = `https://raw.githubusercontent.com/community-scripts/${basePath}/main`;
+  const baseUrl = `https://raw.githubusercontent.com/gdadd/${basePath}/main`;
   return `${baseUrl}/install/${slug}-install.sh`;
 };
 
 const generateSourceUrl = (slug: string, type: string) => {
-  const baseUrl = `https://raw.githubusercontent.com/community-scripts/${basePath}/main`;
+  const baseUrl = `https://raw.githubusercontent.com/gdadd/${basePath}/main`;
   return type === "vm" ? `${baseUrl}/vm/${slug}.sh` : `${baseUrl}/misc/${slug}.sh`;
 };
 
 const generateUpdateUrl = (slug: string) => {
-  const baseUrl = `https://raw.githubusercontent.com/community-scripts/${basePath}/main`;
+  const baseUrl = `https://raw.githubusercontent.com/gdadd/${basePath}/main`;
   return `${baseUrl}/ct/${slug}.sh`;
 };
 

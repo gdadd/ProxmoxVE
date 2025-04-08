@@ -21,6 +21,7 @@ DOCKER_LATEST_VERSION=$(get_latest_release "moby/moby")
 PORTAINER_LATEST_VERSION=$(get_latest_release "portainer/portainer")
 PORTAINER_AGENT_LATEST_VERSION=$(get_latest_release "portainer/agent")
 DOCKER_COMPOSE_LATEST_VERSION=$(get_latest_release "docker/compose")
+DOCKGE_LATEST_VERSION=$(get_latest_release "louislam/dockge")
 
 msg_info "Installing Docker $DOCKER_LATEST_VERSION"
 DOCKER_CONFIG_PATH='/etc/docker/daemon.json'
@@ -55,6 +56,20 @@ else
       portainer/agent
     msg_ok "Installed Portainer Agent $PORTAINER_AGENT_LATEST_VERSION"
   fi
+fi
+
+read -r -p "Would you like to add Dockge? <y/N> " prompt
+if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
+  msg_info "Installing Dockge $DOCKGE_LATEST_VERSION"
+  docker volume create dockge_data >/dev/null
+  $STD docker run -d \
+    -p 5001:5001 \
+    --name=dockge \
+    --restart=always \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v dockge_data:/app/data \
+    louislam/dockge:1
+  msg_ok "Installed Dockge $DOCKGE_LATEST_VERSION"
 fi
 
 motd_ssh

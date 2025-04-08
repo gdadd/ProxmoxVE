@@ -8,8 +8,8 @@ source <(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxV
 APP="Actual Budget"
 var_tags="finance"
 var_cpu="2"
-var_ram="2048"
-var_disk="4"
+var_ram="4096"
+var_disk="7"
 var_os="debian"
 var_version="12"
 var_unprivileged="1"
@@ -34,6 +34,13 @@ function update_script() {
     msg_info "Stopping ${APP}"
     systemctl stop actualbudget
     msg_ok "${APP} Stopped"
+
+    if ! command -v git &>/dev/null; then
+      msg_info "Installing git"
+      $STD apt-get update
+      $STD apt-get install -y git
+      msg_ok "Installed git"
+    fi
 
     msg_info "Updating ${APP} to ${RELEASE}"
     cd /tmp || exit
@@ -77,7 +84,10 @@ ACTUAL_HTTPS_CERT=/opt/actualbudget/selfhost.crt
 EOF
     fi
     cd /opt/actualbudget || exit
-    $STD yarn workspaces focus @actual-app/sync-server --production
+    export NODE_OPTIONS="--max_old_space_size=3072"
+    $STD yarn install
+    $STD yarn run build:server
+    #$STD yarn workspaces focus @actual-app/sync-server --production
     echo "${RELEASE}" >/opt/actualbudget_version.txt
     msg_ok "Updated ${APP}"
 

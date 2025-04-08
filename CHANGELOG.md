@@ -14,6 +14,75 @@ Exercise vigilance regarding copycat or coat-tailing sites that seek to exploit 
 All LXC instances created using this repository come pre-installed with Midnight Commander, which is a command-line tool (`mc`) that offers a user-friendly file and directory management interface for the terminal environment.
 
 
+## 2025-04-08
+
+### 🆕 New Scripts
+
+  - Alpine-PostgreSQL [@MickLesk](https://github.com/MickLesk) ([#3751](https://github.com/community-scripts/ProxmoxVE/pull/3751))
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - Alpine-Wireguard: Fix for sysctl and ip_forward [@juronja](https://github.com/juronja) ([#3744](https://github.com/community-scripts/ProxmoxVE/pull/3744))
+    - TriliumNext: fix dump-db [@MickLesk](https://github.com/MickLesk) ([#3741](https://github.com/community-scripts/ProxmoxVE/pull/3741))
+    - Actual: Reduce RAM to 4GB and old space to 3072MB  [@dannyellis](https://github.com/dannyellis) ([#3730](https://github.com/community-scripts/ProxmoxVE/pull/3730))
+
+  - #### ✨ New Features
+
+    - Alpine-MariaDB: better handling of adminer installation [@MickLesk](https://github.com/MickLesk) ([#3739](https://github.com/community-scripts/ProxmoxVE/pull/3739))
+    - Paperless-GPT: Add logging to service file [@tremor021](https://github.com/tremor021) ([#3738](https://github.com/community-scripts/ProxmoxVE/pull/3738))
+
+### 🌐 Website
+
+  - #### 📝 Script Information
+
+    - Meilisearch: Fix Typo [@michelroegl-brunner](https://github.com/michelroegl-brunner) ([#3749](https://github.com/community-scripts/ProxmoxVE/pull/3749))
+
+## 2025-04-07
+
+### 🆕 New Scripts
+
+  - Breaking: Hoarder > Karakeep [@MickLesk](https://github.com/MickLesk) ([#3699](https://github.com/community-scripts/ProxmoxVE/pull/3699))
+
+### 🚀 Updated Scripts
+
+  - Actual: Increase RAM and add heap-space var for nodejs [@MickLesk](https://github.com/MickLesk) ([#3713](https://github.com/community-scripts/ProxmoxVE/pull/3713))
+
+  - #### 🐞 Bug Fixes
+
+    - Alpine-MariaDB: Fix Install Service startup [@MickLesk](https://github.com/MickLesk) ([#3701](https://github.com/community-scripts/ProxmoxVE/pull/3701))
+    - Zitadel: Fix release tarball crawling [@tremor021](https://github.com/tremor021) ([#3716](https://github.com/community-scripts/ProxmoxVE/pull/3716))
+
+  - #### ✨ New Features
+
+    - Kimai: bump php to 8.4 [@MickLesk](https://github.com/MickLesk) ([#3724](https://github.com/community-scripts/ProxmoxVE/pull/3724))
+
+  - #### 🔧 Refactor
+
+    - Refactor: Zabbix, get always latest version [@MickLesk](https://github.com/MickLesk) ([#3720](https://github.com/community-scripts/ProxmoxVE/pull/3720))
+
+### 🌐 Website
+
+  - #### 📝 Script Information
+
+    - Changed the category of Channels DVR and NextPVR [@johnsturgeon](https://github.com/johnsturgeon) ([#3729](https://github.com/community-scripts/ProxmoxVE/pull/3729))
+
+## 2025-04-06
+
+### 🚀 Updated Scripts
+
+  - #### 🐞 Bug Fixes
+
+    - Actual: Add git dependency & change yarn commands [@MickLesk](https://github.com/MickLesk) ([#3703](https://github.com/community-scripts/ProxmoxVE/pull/3703))
+    - Pelican-Panel: Fix PHP 8.4 Repository [@MickLesk](https://github.com/MickLesk) ([#3700](https://github.com/community-scripts/ProxmoxVE/pull/3700))
+
+### 🌐 Website
+
+  - #### 🐞 Bug Fixes
+
+    - Implement FAQ component and integrate it into the main page [@BramSuurdje](https://github.com/BramSuurdje) ([#3709](https://github.com/community-scripts/ProxmoxVE/pull/3709))
+
 ## 2025-04-05
 
 ### 🌐 Website

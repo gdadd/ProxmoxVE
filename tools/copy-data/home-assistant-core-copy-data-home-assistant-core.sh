@@ -5,15 +5,13 @@
 # License: MIT
 # https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 
-# Use to copy all data from a Podman Home Assistant LXC to a Docker Home Assistant LXC.
-# run from the Proxmox Shell
 clear
 if ! command -v pveversion >/dev/null 2>&1; then
   echo -e "⚠️  Run from the Proxmox Shell"
   exit
 fi
 while true; do
-  read -p "Use to copy all data from a Podman Home Assistant LXC to a Docker Home Assistant LXC. Proceed(y/n)?" yn
+  read -p "Use to copy all data from a Home Assistant Core LXC to a Home Assistant Core LXC. Proceed(y/n)?" yn
   case $yn in
   [Yy]*) break ;;
   [Nn]*) exit ;;
@@ -36,11 +34,6 @@ function error_exit() {
   local FLAG="\e[91m[ERROR] \e[93m$EXIT@$LINE"
   msg "$FLAG $REASON"
   exit $EXIT
-}
-function warn() {
-  local REASON="\e[97m$1\e[39m"
-  local FLAG="\e[93m[WARNING]\e[39m"
-  msg "$FLAG $REASON"
 }
 function info() {
   local REASON="$1"
@@ -72,13 +65,13 @@ while read -r line; do
 done < <(pct list | awk 'NR>1')
 while [ -z "${CTID_FROM:+x}" ]; do
   CTID_FROM=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "$TITLE" --radiolist \
-    "\nWhich HA Podman LXC would you like to copy FROM?\n" \
+    "\nWhich HA Core LXC would you like to copy FROM?\n" \
     16 $(($MSG_MAX_LENGTH + 23)) 6 \
     "${CTID_MENU[@]}" 3>&1 1>&2 2>&3) || exit
 done
 while [ -z "${CTID_TO:+x}" ]; do
   CTID_TO=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "$TITLE" --radiolist \
-    "\nWhich HA LXC would you like to copy TO?\n" \
+    "\nWhich HA Core LXC would you like to copy TO?\n" \
     16 $(($MSG_MAX_LENGTH + 23)) 6 \
     "${CTID_MENU[@]}" 3>&1 1>&2 2>&3) || exit
 done
@@ -91,28 +84,29 @@ done
 whiptail --backtitle "Proxmox VE Helper Scripts" --defaultno --title "$TITLE" --yesno \
   "Are you sure you want to copy data between the following LXCs?
 $CTID_FROM (${CTID_FROM_HOSTNAME}) -> $CTID_TO (${CTID_TO_HOSTNAME})
-Version: 2022.03.31" 13 50 || exit
+Version: 2022.10.03" 13 50 || exit
 info "Home Assistant Data from '$CTID_FROM' to '$CTID_TO'"
+if [ $(pct status $CTID_FROM | sed 's/.* //') == 'running' ]; then
+  msg "Stopping '$CTID_FROM'..."
+  pct stop $CTID_FROM
+fi
 if [ $(pct status $CTID_TO | sed 's/.* //') == 'running' ]; then
   msg "Stopping '$CTID_TO'..."
   pct stop $CTID_TO
 fi
 msg "Mounting Container Disks..."
-DOCKER_PATH=/var/lib/docker/volumes/hass_config/
-PODMAN_PATH=/var/lib/containers/storage/volumes/hass_config/
+CORE_PATH=/root/.homeassistant
+CORE_PATH2=/root/
 CTID_FROM_PATH=$(pct mount $CTID_FROM | sed -n "s/.*'\(.*\)'/\1/p") ||
   die "There was a problem mounting the root disk of LXC '${CTID_FROM}'."
-[ -d "${CTID_FROM_PATH}${PODMAN_PATH}" ] ||
+[ -d "${CTID_FROM_PATH}${CORE_PATH}" ] ||
   die "Home Assistant directories in '$CTID_FROM' not found."
 CTID_TO_PATH=$(pct mount $CTID_TO | sed -n "s/.*'\(.*\)'/\1/p") ||
   die "There was a problem mounting the root disk of LXC '${CTID_TO}'."
-[ -d "${CTID_TO_PATH}${DOCKER_PATH}" ] ||
+[ -d "${CTID_TO_PATH}${CORE_PATH2}" ] ||
   die "Home Assistant directories in '$CTID_TO' not found."
 
-rm -rf ${CTID_TO_PATH}${DOCKER_PATH}
-mkdir ${CTID_TO_PATH}${DOCKER_PATH}
-
-msg "Copying Data Between Containers..."
+msg "Copying Data..."
 RSYNC_OPTIONS=(
   --archive
   --hard-links
@@ -121,12 +115,16 @@ RSYNC_OPTIONS=(
   --no-inc-recursive
   --info=progress2
 )
-msg "<======== Data ========>"
-rsync ${RSYNC_OPTIONS[*]} ${CTID_FROM_PATH}${PODMAN_PATH} ${CTID_TO_PATH}${DOCKER_PATH}
+msg "<======== Docker Data ========>"
+rsync ${RSYNC_OPTIONS[*]} ${CTID_FROM_PATH}${CORE_PATH} ${CTID_TO_PATH}${CORE_PATH2}
 echo -en "\e[1A\e[0K\e[1A\e[0K"
 
 info "Successfully Transferred Data."
 
-# Use to copy all data from a Podman Home Assistant LXC to a Docker Home Assistant LXC.
+# Use to copy all data from a Home Assistant Core LXC to a Home Assistant Container LXC
 # run from the Proxmox Shell
-# bash -c "$(curl -fsSL https://raw.githubusercontent.com/gdadd/ProxmoxVE/main/misc/copy-data/podman-home-assistant-copy-data-home-assistant-container.sh)"
+<<<<<<< HEAD:misc/copy-data/home-assistant-core-copy-data-home-assistant-core.sh
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/gdadd/ProxmoxVE/main/misc/copy-data/home-assistant-core-copy-data-home-assistant-core.sh)"
+=======
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/mainmain/tools/copy-data//home-assistant-core-copy-data-home-assistant-core.sh)"
+>>>>>>> upstream/main:tools/copy-data/home-assistant-core-copy-data-home-assistant-core.sh

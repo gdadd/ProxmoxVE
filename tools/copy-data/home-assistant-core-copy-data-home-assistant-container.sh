@@ -5,15 +5,13 @@
 # License: MIT
 # https://github.com/community-scripts/ProxmoxVE/raw/main/LICENSE
 
-# Use to copy all data from one Plex Media Server LXC to another
-# run from the Proxmox Shell
 clear
 if ! command -v pveversion >/dev/null 2>&1; then
   echo -e "⚠️  Run from the Proxmox Shell"
   exit
 fi
 while true; do
-  read -p "Use to copy all data from one Plex Media Server LXC to another. Proceed(y/n)?" yn
+  read -p "Use to copy all data from a Home Assistant Core LXC to a Home Assistant Container LXC. Proceed(y/n)?" yn
   case $yn in
   [Yy]*) break ;;
   [Nn]*) exit ;;
@@ -60,7 +58,7 @@ function cleanup() {
 TEMP_DIR=$(mktemp -d)
 pushd $TEMP_DIR >/dev/null
 
-TITLE="Plex Media Server LXC Data Copy"
+TITLE="Home Assistant LXC Data Copy"
 while read -r line; do
   TAG=$(echo "$line" | awk '{print $1}')
   ITEM=$(echo "$line" | awk '{print substr($0,36)}')
@@ -72,13 +70,13 @@ while read -r line; do
 done < <(pct list | awk 'NR>1')
 while [ -z "${CTID_FROM:+x}" ]; do
   CTID_FROM=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "$TITLE" --radiolist \
-    "\nWhich Plex Media Server LXC would you like to copy FROM?\n" \
+    "\nWhich HA Core LXC would you like to copy FROM?\n" \
     16 $(($MSG_MAX_LENGTH + 23)) 6 \
     "${CTID_MENU[@]}" 3>&1 1>&2 2>&3) || exit
 done
 while [ -z "${CTID_TO:+x}" ]; do
   CTID_TO=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "$TITLE" --radiolist \
-    "\nWhich Plex Media Server LXC would you like to copy TO?\n" \
+    "\nWhich HA Container LXC would you like to copy TO?\n" \
     16 $(($MSG_MAX_LENGTH + 23)) 6 \
     "${CTID_MENU[@]}" 3>&1 1>&2 2>&3) || exit
 done
@@ -91,27 +89,25 @@ done
 whiptail --backtitle "Proxmox VE Helper Scripts" --defaultno --title "$TITLE" --yesno \
   "Are you sure you want to copy data between the following LXCs?
 $CTID_FROM (${CTID_FROM_HOSTNAME}) -> $CTID_TO (${CTID_TO_HOSTNAME})
-Version: 2022.01.24" 13 50 || exit
-info "Plex Media Server Data from '$CTID_FROM' to '$CTID_TO'"
+Version: 2022.10.02" 13 50 || exit
+info "Home Assistant Data from '$CTID_FROM' to '$CTID_TO'"
 if [ $(pct status $CTID_TO | sed 's/.* //') == 'running' ]; then
   msg "Stopping '$CTID_TO'..."
   pct stop $CTID_TO
 fi
 msg "Mounting Container Disks..."
-DATA_PATH=/var/lib/plexmediaserver/Library/
+DOCKER_PATH=/var/lib/docker/volumes/hass_config/_data
+CORE_PATH=/root/.homeassistant
 CTID_FROM_PATH=$(pct mount $CTID_FROM | sed -n "s/.*'\(.*\)'/\1/p") ||
   die "There was a problem mounting the root disk of LXC '${CTID_FROM}'."
-[ -d "${CTID_FROM_PATH}${DATA_PATH}" ] ||
-  die "Plex Media Server directories in '$CTID_FROM' not found."
+[ -d "${CTID_FROM_PATH}${CORE_PATH}" ] ||
+  die "Home Assistant directories in '$CTID_FROM' not found."
 CTID_TO_PATH=$(pct mount $CTID_TO | sed -n "s/.*'\(.*\)'/\1/p") ||
   die "There was a problem mounting the root disk of LXC '${CTID_TO}'."
-[ -d "${CTID_TO_PATH}${DATA_PATH}" ] ||
-  die "Plex Media Server directories in '$CTID_TO' not found."
+[ -d "${CTID_TO_PATH}${DOCKER_PATH}" ] ||
+  die "Home Assistant directories in '$CTID_TO' not found."
 
-#rm -rf ${CTID_TO_PATH}${DATA_PATH}
-#mkdir ${CTID_TO_PATH}${DATA_PATH}
-
-msg "Copying Data Between Containers..."
+msg "Copying Data..."
 RSYNC_OPTIONS=(
   --archive
   --hard-links
@@ -120,12 +116,16 @@ RSYNC_OPTIONS=(
   --no-inc-recursive
   --info=progress2
 )
-msg "<======== Plex Media Server Data ========>"
-rsync ${RSYNC_OPTIONS[*]} ${CTID_FROM_PATH}${DATA_PATH} ${CTID_TO_PATH}${DATA_PATH}
+msg "<======== Docker Data ========>"
+rsync ${RSYNC_OPTIONS[*]} ${CTID_FROM_PATH}${CORE_PATH} ${CTID_TO_PATH}${DOCKER_PATH}
 echo -en "\e[1A\e[0K\e[1A\e[0K"
 
 info "Successfully Transferred Data."
 
-# Use to copy all data from one Plex Media Server LXC to another
+# Use to copy all data from a Home Assistant Core LXC to a Home Assistant Container LXC
 # run from the Proxmox Shell
-# bash -c "$(curl -fsSL https://raw.githubusercontent.com/gdadd/ProxmoxVE/main/misc/copy-data/plex-copy-data-plex.sh)"
+<<<<<<< HEAD:misc/copy-data/home-assistant-core-copy-data-home-assistant-container.sh
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/gdadd/ProxmoxVE/main/misc/copy-data/home-assistant-core-copy-data-home-assistant-container.sh)"
+=======
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/mainmain/tools/copy-data//home-assistant-core-copy-data-home-assistant-container.sh)"
+>>>>>>> upstream/main:tools/copy-data/home-assistant-core-copy-data-home-assistant-container.sh

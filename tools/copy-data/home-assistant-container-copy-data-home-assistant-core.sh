@@ -11,7 +11,7 @@ if ! command -v pveversion >/dev/null 2>&1; then
   exit
 fi
 while true; do
-  read -p "Use to copy all data from a Home Assistant Core LXC to a Home Assistant Container LXC. Proceed(y/n)?" yn
+  read -p "Use to copy all data from a Home Assistant Container LXC to a Home Assistant Core LXC. Proceed(y/n)?" yn
   case $yn in
   [Yy]*) break ;;
   [Nn]*) exit ;;
@@ -70,13 +70,13 @@ while read -r line; do
 done < <(pct list | awk 'NR>1')
 while [ -z "${CTID_FROM:+x}" ]; do
   CTID_FROM=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "$TITLE" --radiolist \
-    "\nWhich HA Core LXC would you like to copy FROM?\n" \
+    "\nWhich HA Container LXC would you like to copy FROM?\n" \
     16 $(($MSG_MAX_LENGTH + 23)) 6 \
     "${CTID_MENU[@]}" 3>&1 1>&2 2>&3) || exit
 done
 while [ -z "${CTID_TO:+x}" ]; do
   CTID_TO=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "$TITLE" --radiolist \
-    "\nWhich HA Container LXC would you like to copy TO?\n" \
+    "\nWhich HA Core LXC would you like to copy TO?\n" \
     16 $(($MSG_MAX_LENGTH + 23)) 6 \
     "${CTID_MENU[@]}" 3>&1 1>&2 2>&3) || exit
 done
@@ -100,11 +100,11 @@ DOCKER_PATH=/var/lib/docker/volumes/hass_config/_data
 CORE_PATH=/root/.homeassistant
 CTID_FROM_PATH=$(pct mount $CTID_FROM | sed -n "s/.*'\(.*\)'/\1/p") ||
   die "There was a problem mounting the root disk of LXC '${CTID_FROM}'."
-[ -d "${CTID_FROM_PATH}${CORE_PATH}" ] ||
+[ -d "${CTID_FROM_PATH}${DOCKER_PATH}" ] ||
   die "Home Assistant directories in '$CTID_FROM' not found."
 CTID_TO_PATH=$(pct mount $CTID_TO | sed -n "s/.*'\(.*\)'/\1/p") ||
   die "There was a problem mounting the root disk of LXC '${CTID_TO}'."
-[ -d "${CTID_TO_PATH}${DOCKER_PATH}" ] ||
+[ -d "${CTID_TO_PATH}${CORE_PATH}" ] ||
   die "Home Assistant directories in '$CTID_TO' not found."
 
 msg "Copying Data..."
@@ -117,11 +117,15 @@ RSYNC_OPTIONS=(
   --info=progress2
 )
 msg "<======== Docker Data ========>"
-rsync ${RSYNC_OPTIONS[*]} ${CTID_FROM_PATH}${CORE_PATH} ${CTID_TO_PATH}${DOCKER_PATH}
+rsync ${RSYNC_OPTIONS[*]} ${CTID_FROM_PATH}${DOCKER_PATH} ${CTID_TO_PATH}${CORE_PATH}
 echo -en "\e[1A\e[0K\e[1A\e[0K"
 
 info "Successfully Transferred Data."
 
-# Use to copy all data from a Home Assistant Core LXC to a Home Assistant Container LXC
+# Use to copy all data from a Home Assistant Container LXC to a Home Assistant Core LXC
 # run from the Proxmox Shell
-# bash -c "$(curl -fsSL https://raw.githubusercontent.com/gdadd/ProxmoxVE/main/misc/copy-data/home-assistant-core-copy-data-home-assistant-container.sh)"
+<<<<<<< HEAD:misc/copy-data/home-assistant-container-copy-data-home-assistant-core.sh
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/gdadd/ProxmoxVE/main/misc/copy-data/home-assistant-container-copy-data-home-assistant-core.sh)"
+=======
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/mainmain/tools/copy-data//home-assistant-container-copy-data-home-assistant-core.sh)"
+>>>>>>> upstream/main:tools/copy-data/home-assistant-container-copy-data-home-assistant-core.sh

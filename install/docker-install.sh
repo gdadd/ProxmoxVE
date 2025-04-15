@@ -61,16 +61,12 @@ fi
 
 read -r -p "Would you like to add Dockge? <y/N> " prompt
 if [[ ${prompt,,} =~ ^(y|yes)$ ]]; then
-  msg_info "Installing Dockge $DOCKGE_LATEST_VERSION"
-  docker volume create dockge_data >/dev/null
-  $STD docker run -d \
-    -p 5001:5001 \
-    --name=dockge \
-    --restart=always \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v dockge_data:/app/data \
-    louislam/dockge:1
-  msg_ok "Installed Dockge $DOCKGE_LATEST_VERSION"
+msg_info "Installing Dockge"
+mkdir -p /opt/{dockge,stacks}
+curl -fsSL "https://raw.githubusercontent.com/louislam/dockge/master/compose.yaml" -o "/opt/dockge/compose.yaml"
+cd /opt/dockge
+$STD docker compose up -d
+msg_ok "Installed Dockge"
 fi
 
 motd_ssh
